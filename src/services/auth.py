@@ -57,7 +57,7 @@ class AuthService:
     @staticmethod
     @log_service(logger=logger, log_result=True)
     async def login(db: AsyncSession, data: LoginRequest) -> LoginResponse:
-        user = await AuthRepository._get_by_username(db, data.username)
+        user = await AuthRepository._get_by_email(db, data.email)
         if not user:
             raise HTTPException(status_code=401, detail="Invalid username or password")
     

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Security
 from src.utils.security import refresh_security
 from fastapi_jwt import JwtAuthorizationCredentials
-from src.schemas.auth import LoginResponse, LoginRequest, RegistrationResponse, RegistrationRequest, RefreshResponse
+from src.schemas.auth import LoginResponse, LoginRequest, RegistrationResponse, RegistrationRequest, RefreshResponse, UserRead
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.services.auth import AuthService
 from src.utils.dependencies import get_db
@@ -20,4 +20,3 @@ async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
 @auth_router.post("/refresh", response_model=RefreshResponse)
 async def refresh_token(db: AsyncSession = Depends(get_db), credentials: JwtAuthorizationCredentials = Security(refresh_security)):
     return await AuthService.refresh(db, credentials)
-

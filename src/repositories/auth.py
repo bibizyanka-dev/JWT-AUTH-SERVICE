@@ -11,6 +11,12 @@ class AuthRepository:
         )
         return exists.scalars().first()
     
+    async def _get_by_email(db: AsyncSession, email:str) -> UserORM | None:
+        exists = await db.execute(
+            select(UserORM).where(UserORM.email == email)
+        )
+        return exists.scalars().first()
+    
     @staticmethod
     async def create_new_user(db: AsyncSession, username: str, password: str, email: str) -> UserORM:
         new_user = UserORM(
