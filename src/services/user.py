@@ -1,8 +1,6 @@
 
 import bcrypt
-from fastapi import HTTPException
 from fastapi import Depends, HTTPException, status
-from src.schemas.user import UserUpdate
 from src.schemas.user import UserRead
 from src.repositories.user import UserRepository
 from src.utils.logging import log_service

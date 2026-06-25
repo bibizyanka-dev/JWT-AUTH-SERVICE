@@ -8,6 +8,13 @@ class UserRead(BaseModel):
     username: str
     locale: Locale | None = None
 
+class UserCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    email: EmailStr
+    username: str
+    password: str
+    avatar_url: str
+
 class UserUpdate(BaseModel):
     email: EmailStr | None = None
     username: str | None = None

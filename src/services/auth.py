@@ -1,6 +1,6 @@
 import logging
 import bcrypt
-from fastapi import Depends, HTTPException, Security
+from fastapi import HTTPException
 from fastapi_jwt import JwtAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.repositories.auth import AuthRepository
@@ -8,7 +8,7 @@ from src.repositories.user import UserRepository
 from src.schemas.user import UserRead
 from src.utils.logging import log_service
 from src.utils.security import access_security, refresh_security
-from src.schemas.auth import RegistrationRequest, RegistrationResponse, LoginRequest, LoginResponse, RefreshResponse
+from src.schemas.auth import RegistrationRequest, LoginRequest, RefreshResponse, AuthTokens
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class AuthService:
 
     @staticmethod
     @log_service(logger=logger, log_result=True)
-    async def login(db: AsyncSession, data: LoginRequest) -> LoginResponse:
+    async def login(db: AsyncSession, data: LoginRequest) -> AuthTokens:
         user = await AuthRepository._get_by_email(db, data.email)
         if not user:
             raise HTTPException(status_code=401, detail="Invalid username or password")
@@ -87,17 +87,16 @@ class AuthService:
             }
         )
 
-        return LoginResponse(
+        return AuthTokens(
             user=user_read,
             access_token=access_token,
             refresh_token=refresh_token,
-            token_type="bearer"
         )
 
 
     @staticmethod
     @log_service(logger=logger, log_result=True)
-    async def registration(db: AsyncSession, data: RegistrationRequest) -> RegistrationResponse:
+    async def registration(db: AsyncSession, data: RegistrationRequest) -> AuthTokens:
         if await AuthRepository._get_by_username(db, data.username):
             raise HTTPException(status_code=409, detail="User already exists")
         
@@ -129,10 +128,9 @@ class AuthService:
             }
         )
 
-        return RegistrationResponse(
+        return AuthTokens(
             user=new_user,
             access_token=access_token,
             refresh_token=refresh_token,
-            token_type="bearer"
         )
 
